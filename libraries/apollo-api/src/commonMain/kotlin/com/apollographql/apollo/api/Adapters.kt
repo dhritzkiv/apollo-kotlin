@@ -437,7 +437,8 @@ private class CatchToResultAdapter<T>(private val wrappedAdapter: Adapter<T>) : 
   override fun toJson(writer: JsonWriter, customScalarAdapters: CustomScalarAdapters, value: FieldResult<T>) {
     when (value) {
       is FieldResult.Success -> wrappedAdapter.toJson(writer, customScalarAdapters, value.getOrThrow())
-      else -> Unit // ignore errors
+      // write the null the server sent for the errored field, so that the enclosing object stays well-formed
+      else -> writer.nullValue()
     }
   }
 }
